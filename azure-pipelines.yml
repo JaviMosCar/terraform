@@ -2,22 +2,28 @@ trigger:
 - master
 
 pool:
-    vmImage: 'ubuntu-latest'
+  vmImage: 'ubuntu-latest'
 
-steps:
-- task: UseDotNet@2
+jobs:
+- job: TerraformJob
+  displayName: 'Terraform Deployment'
+  steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core SDK'
     inputs:
-        packageType: 'sdk'
-        version: '3.1.x'
-        installationPath: $(Agent.ToolsDirectory)/dotnet
+      packageType: 'sdk'
+      version: '3.1.x'
+      installationPath: $(Agent.ToolsDirectory)/dotnet
 
-- script: |
-        terraform init
-        terraform validate
+  - script: |
+      # Inicia y valida la configuración de Terraform
+      terraform init
+      terraform validate
     displayName: 'Terraform Init and Validate'
 
-- script: 'terraform plan -out=tfplan'
+  - script: 'terraform plan -out=tfplan'
     displayName: 'Terraform Plan'
 
-- script: 'terraform apply -auto-approve tfplan'
+  - script: 'terraform apply -auto-approve tfplan'
     displayName: 'Terraform Apply'
+
